@@ -23,7 +23,7 @@
 
       <ul class="list-group" v-if="todos.length">
         <li
-          v-for="(todo, index) in todos"
+          v-for="todo in todos"
           :key="todo.id"
           class="list-group-item d-flex justify-content-between"
         >
@@ -37,32 +37,30 @@
           <span>
             <button
               class="btn btn-sm btn-outline-danger"
-              @click="deleteTask(index)"
+              @click="deleteTask(todo.id)"
             >
               <i class="fas fa-trash"></i>
             </button>
             <button
               class="btn btn-sm btn-outline-success mx-1"
-              @click="markAsDone(index)"
+              @click="markAsDone(todo.id)"
             >
               <i class="fas fa-check"></i>
             </button>
 
-            <!-- Button trigger modal -->
             <button
               type="button"
               class="btn btn-sm btn-outline-primary"
               data-bs-toggle="modal"
-              @click="setDefaultValue(index)"
-              v-bind:data-bs-target="`#Modal${index}`"
+              @click="setDefaultValue(todo.id)"
+              v-bind:data-bs-target="`#Modal${todo.id}`"
             >
               <i class="far fa-edit"></i>
             </button>
 
-            <!-- Modal -->
             <div
               class="modal fade"
-              v-bind:id="`Modal${index}`"
+              v-bind:id="`Modal${todo.id}`"
               data-bs-backdrop="static"
               data-bs-keyboard="false"
               tabindex="-1"
@@ -94,7 +92,7 @@
                           type="text"
                           class="form-control d-none"
                           id="index"
-                          :value="index"
+                          :value="todo.id"
                         />
                       </div>
                     </div>
@@ -129,47 +127,89 @@
 </template>
 
 <script>
-// import TodoForm from "./TodoForm.vue";
+import axios from "axios";
 
 export default {
+  name: "ToDo",
   data() {
     return {
       newTodo: { title: "", isDone: false },
-      updateTodo: { title: "", index: 0 },
+      updateTodo: { title: "", id: 0, isDone: true },
       todos: [],
+      BASE_URL: "http://localhost:3000",
     };
   },
   components: {},
+  mounted() {
+    this.loadTasks();
+  },
+
   methods: {
+    loadTasks() {
+      const url = `${this.BASE_URL}/tasks`;
+      axios
+        .get(url)
+        .then((res) => {
+          console.log(res.data);
+          this.todos = [...res.data];
+        })
+        .catch((err) => console.log(err));
+    },
     submitForm() {
       if (this.newTodo.title) {
-        const newTodo = Object.assign({}, this.newTodo);
-        this.todos.unshift(newTodo);
-        this.newTodo.title = "";
+        const url = `${this.BASE_URL}/tasks`;
+        console.log(url);
+
+        axios
+          .post(url, this.newTodo)
+          .then((res) => {
+            console.log(res.data);
+            this.loadTasks();
+            this.newTodo.title = "";
+          })
+          .catch((err) => console.log(err));
       }
     },
 
     deleteTask(id) {
-      console.log(id);
-      if (id == 0) {
-        this.todos.shift();
-      } else {
-        this.todos.splice(id, id);
-      }
+      const url = `${this.BASE_URL}/tasks/${id}`;
+      axios
+        .delete(url)
+        .then((res) => {
+          console.log(res.data);
+          this.loadTasks();
+        })
+        .catch((err) => console.log(err));
     },
     markAsDone(id) {
-      this.todos[id].isDone = true;
+      const todo = this.todos.find((todo) => todo.id === id);
+      todo.isDone = true;
+      const url = `${this.BASE_URL}/tasks/${id}`;
+      axios
+        .put(url, todo)
+        .then((res) => {
+          console.log(res.data);
+          this.loadTasks();
+        })
+        .catch((err) => console.log(err));
     },
     setDefaultValue(id) {
-      this.updateTodo.title = this.todos[id].title;
-      this.updateTodo.index = id;
+      const todo = this.todos.find((todo) => todo.id === id);
+      this.updateTodo = todo;
     },
     updateTask() {
-      const { title, index } = this.updateTodo;
-      this.todos[index].title = title;
+      const { id } = this.updateTodo;
+      const url = `${this.BASE_URL}/tasks/${id}`;
+      axios
+        .put(url, this.updateTodo)
+        .then((res) => {
+          console.log(res.data);
+          this.loadTasks();
+        })
+        .catch((err) => console.log(err));
     },
   },
 };
 </script>
 
-<style></style>
+<style scoped></style>
