@@ -139,18 +139,23 @@ export default {
       todos: [],
     };
   },
-  components: {
-    // TodoForm,
-  },
+  components: {},
   methods: {
     submitForm() {
-      const newTodo = Object.assign({}, this.newTodo);
-      this.todos.push(newTodo);
-      this.newTodo.title = "";
+      if (this.newTodo.title) {
+        const newTodo = Object.assign({}, this.newTodo);
+        this.todos.unshift(newTodo);
+        this.newTodo.title = "";
+      }
     },
 
     deleteTask(id) {
-      this.todos.pop(id);
+      console.log(id);
+      if (id == 0) {
+        this.todos.shift();
+      } else {
+        this.todos.splice(id, id);
+      }
     },
     markAsDone(id) {
       this.todos[id].isDone = true;
@@ -160,7 +165,6 @@ export default {
       this.updateTodo.index = id;
     },
     updateTask() {
-      //   event.preventDefault();
       const { title, index } = this.updateTodo;
       this.todos[index].title = title;
     },
