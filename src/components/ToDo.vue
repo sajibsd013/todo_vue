@@ -2,6 +2,24 @@
   <div class="row mt-5">
     <div class="todos col-md-6 mx-auto shadow p-4 rounded">
       <h3 class="text-center display-6 mb-5">Todo App</h3>
+      <form @submit.prevent="submitForm">
+        <div class="mb-3 d-flex">
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            v-model="newTodo.title"
+            placeholder="Add New task..."
+          />
+          <button
+            type="submit"
+            data-bs-dismiss="modal"
+            class="btn btn-primary ms-2"
+          >
+            Add
+          </button>
+        </div>
+      </form>
 
       <ul class="list-group" v-if="todos.length">
         <li
@@ -103,64 +121,8 @@
           </span>
         </li>
       </ul>
-      <p v-else class="lead text-center py-3">No Task</p>
-      <button
-        type="button"
-        class="btn btn-sm btn-outline-dark d-block mx-auto mt-3 px-5"
-        data-bs-toggle="modal"
-        data-bs-target="#newTodoModal"
-      >
-        Add Task
-      </button>
-    </div>
-    <div
-      class="modal fade"
-      id="newTodoModal"
-      tabindex="-1"
-      aria-labelledby="newTodoModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="newTodoModalLabel">Add Task</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <form @submit.prevent="submitForm">
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="title" class="form-label">Task Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="title"
-                  v-model="newTodo.title"
-                />
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="reset"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-              <button
-                type="submit"
-                data-bs-dismiss="modal"
-                class="btn btn-primary"
-              >
-                Add Task
-              </button>
-            </div>
-          </form>
-        </div>
+      <div v-else class="alert alert-warning text-center" role="alert">
+        No task added
       </div>
     </div>
   </div>
@@ -184,6 +146,7 @@ export default {
     submitForm() {
       const newTodo = Object.assign({}, this.newTodo);
       this.todos.push(newTodo);
+      this.newTodo.title = "";
     },
 
     deleteTask(id) {
