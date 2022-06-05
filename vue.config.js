@@ -5,5 +5,5 @@ module.exports = defineConfig({
 
 
 module.exports = {
-  publicPath: '/vue-app-deploy-example/'
+  publicPath: '/todo_vue/'
 }
