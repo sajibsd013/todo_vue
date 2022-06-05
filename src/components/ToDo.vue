@@ -16,7 +16,7 @@
             data-bs-dismiss="modal"
             class="btn btn-primary ms-2"
           >
-            Add
+            <i class="fas fa-plus"></i>
           </button>
         </div>
       </form>
