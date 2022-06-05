@@ -3,7 +3,7 @@
     <div class="todos col-md-6 mx-auto shadow p-4 rounded">
       <h3 class="text-center display-6 mb-5">Todo App</h3>
 
-      <ul class="list-group">
+      <ul class="list-group" v-if="todos.length">
         <li
           v-for="(todo, index) in todos"
           :key="todo.id"
@@ -13,7 +13,8 @@
             v-bind:class="
               todo.isDone && 'text-danger text-decoration-line-through '
             "
-            >{{ todo.title }}
+          >
+            {{ todo.title }}
           </span>
           <span>
             <button
@@ -61,7 +62,7 @@
                       aria-label="Close"
                     ></button>
                   </div>
-                  <form @submit="updateTask">
+                  <form @submit.prevent="updateTask">
                     <div class="modal-body">
                       <div class="mb-3">
                         <label for="title" class="form-label">Task Name</label>
@@ -102,6 +103,7 @@
           </span>
         </li>
       </ul>
+      <p v-else class="lead text-center py-3">No Task</p>
       <button
         type="button"
         class="btn btn-sm btn-outline-dark d-block mx-auto mt-3 px-5"
@@ -129,7 +131,7 @@
               aria-label="Close"
             ></button>
           </div>
-          <form @submit="submitForm">
+          <form @submit.prevent="submitForm">
             <div class="modal-body">
               <div class="mb-3">
                 <label for="title" class="form-label">Task Name</label>
@@ -172,21 +174,16 @@ export default {
     return {
       newTodo: { title: "", isDone: false },
       updateTodo: { title: "", index: 0 },
-
-      todos: [
-        { title: "Learn React", isDone: false },
-        { title: "Learn Vue", isDone: false },
-        { title: "Learn Nuxt", isDone: false },
-      ],
+      todos: [],
     };
   },
   components: {
     // TodoForm,
   },
   methods: {
-    submitForm(event) {
-      event.preventDefault();
-      this.todos.push(this.newTodo);
+    submitForm() {
+      const newTodo = Object.assign({}, this.newTodo);
+      this.todos.push(newTodo);
     },
 
     deleteTask(id) {
@@ -199,8 +196,8 @@ export default {
       this.updateTodo.title = this.todos[id].title;
       this.updateTodo.index = id;
     },
-    updateTask(event) {
-      event.preventDefault();
+    updateTask() {
+      //   event.preventDefault();
       const { title, index } = this.updateTodo;
       this.todos[index].title = title;
     },
